@@ -16,16 +16,27 @@
       width: 100vw;
       height: 100vh;
     }
+    #coordinate-display {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      padding: 5px 10px;
+      font-family: monospace;
+      font-size: 14px;
+      border-radius: 5px;
+    }
   </style>
-  <!-- Load OpenSeadragon with defer to ensure it's ready before running -->
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.0/openseadragon.min.js"></script>
 </head>
 <body>
   <div id="viewer"></div>
+  <div id="coordinate-display">Re: -0.75, Im: 0.00</div>
 
   <script>
     window.onload = function () {
-      OpenSeadragon({
+      const viewer = OpenSeadragon({
         id: "viewer",
         prefixUrl: "https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.0/images/",
         showNavigationControl: true,
@@ -45,8 +56,31 @@
         visibilityRatio: 1,
         constrainDuringPan: true
       });
+
+      const coordinateDisplay = document.getElementById('coordinate-display');
+
+      viewer.addHandler('mouse-move', function (event) {
+        const webPoint = event.position;
+        const viewportPoint = viewer.viewport.pointFromPixel(webPoint);
+        const tiledImage = viewer.world.getItemAt(0);
+
+        if (tiledImage) {
+            const imagePoint = tiledImage.viewportToImageCoordinates(viewportPoint);
+            
+            const complexWidth = 3.0;
+            const complexHeight = 3.0;
+            const originX = -0.75;
+            const originY = 0.0;
+            const imgWidth = tiledImage.source.width;
+            const imgHeight = tiledImage.source.height;
+            
+            const re = originX - (complexWidth / 2) + (imagePoint.x / imgWidth) * complexWidth;
+            const im = originY + (complexHeight / 2) - (imagePoint.y / imgHeight) * complexHeight;
+
+            coordinateDisplay.textContent = `Re: ${re.toFixed(8)}, Im: ${im.toFixed(8)}`;
+        }
+      });
     };
   </script>
 </body>
 </html>
-
