@@ -1,23 +1,41 @@
-<script>
-  OpenSeadragon({
-    id: "viewer",
-    prefixUrl: "https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.0/images/",
-    showNavigationControl: true,
-    tileSources: {
-      height: 32768,
-      width: 32768,
-      tileSize: 256,
-      minLevel: 0,
-      maxLevel: 7, // we only have tiles up to level 7
-      getTileUrl: function (level, x, y) {
-        return `tiles/z${level}/${x}_${y}.jpg`;
-      }
-    },
-    minZoomLevel: 0,
-    defaultZoomLevel: 1,
-    maxZoomPixelRatio: 4,  // ← allows zooming in beyond native resolution (32768px) up to 4x
-    visibilityRatio: 1,
-    constrainDuringPan: true
-  });
-</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mandelbrot Gigapixel Viewer</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      height: 100%;
+      width: 100%;
+    }
+    #viewer {
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
+  <!-- Load OpenSeadragon script in the <head> with 'defer' to ensure it's available when DOM is ready -->
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.0/openseadragon.min.js"></script>
+</head>
+<body>
+  <div id="viewer"></div>
+
+  <script>
+    // Wait until the window is fully loaded before calling OpenSeadragon
+    window.onload = function () {
+      OpenSeadragon({
+        id: "viewer",
+        prefixUrl: "https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.0/images/",
+        showNavigationControl: true,
+        tileSources: {
+          height: 32768,
+          width: 32768,
+          tileSize: 256,
+          minLevel: 0,
+          maxLevel: 7,
+          getTileUrl: function (level, x, y) {
+            return `tiles/z${level}/${x}_${y}.jpg`;
+          }
 
