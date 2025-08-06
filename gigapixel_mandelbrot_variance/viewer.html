@@ -36,6 +36,8 @@
 
   <script>
     window.onload = function () {
+      let tiledImage = null;
+
       const viewer = OpenSeadragon({
         id: "viewer",
         prefixUrl: "https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.0/images/",
@@ -52,33 +54,54 @@
         },
         minZoomLevel: 0,
         defaultZoomLevel: 1,
-        maxZoomPixelRatio: 4,      // zoom up to 4× beyond native
+        maxZoomPixelRatio: 4,
         visibilityRatio: 1,
         constrainDuringPan: true
       });
 
       const coordinateDisplay = document.getElementById('coordinate-display');
 
-      viewer.addHandler('mouse-move', function (event) {
-        const webPoint = event.position;
-        const viewportPoint = viewer.viewport.pointFromPixel(webPoint);
-        const tiledImage = viewer.world.getItemAt(0);
-
+      // Add a handler for the 'open' event to ensure the tiledImage is ready.
+      viewer.addHandler('open', function () {
+        tiledImage = viewer.world.getItemAt(0);
+        
+        // Final check to see if the image is actually loaded and ready
         if (tiledImage) {
-            const imagePoint = tiledImage.viewportToImageCoordinates(viewportPoint);
-            
-            const complexWidth = 3.0;
-            const complexHeight = 3.0;
-            const originX = -0.75;
-            const originY = 0.0;
-            const imgWidth = tiledImage.source.width;
-            const imgHeight = tiledImage.source.height;
-            
-            const re = originX - (complexWidth / 2) + (imagePoint.x / imgWidth) * complexWidth;
-            const im = originY + (complexHeight / 2) - (imagePoint.y / imgHeight) * complexHeight;
-
-            coordinateDisplay.textContent = `Re: ${re.toFixed(8)}, Im: ${im.toFixed(8)}`;
+          console.log("Viewer is ready and image is loaded. Coordinate tracker should now be active.");
+        } else {
+          console.error("Failed to get tiled image. Please check your tile source path and server configuration.");
         }
+      });
+
+      // Use a custom event handler on the viewer's canvas to get a robust position.
+      // This is a reliable alternative to OpenSeadragon's default 'mouse-move' event.
+      viewer.canvas.addEventListener('mousemove', function (e) {
+        if (!tiledImage) {
+          return;
+        }
+
+        // Get mouse position relative to the viewer's canvas
+        const rect = viewer.canvas.getBoundingClientRect();
+        const webPoint = new OpenSeadragon.Point(e.clientX - rect.left, e.clientY - rect.top);
+        
+        const viewportPoint = viewer.viewport.pointFromPixel(webPoint);
+        const imagePoint = tiledImage.viewportToImageCoordinates(viewportPoint);
+
+        if (!imagePoint) {
+          return;
+        }
+
+        const complexWidth = 3.0;
+        const complexHeight = 3.0;
+        const centerRe = -0.75;
+        const centerIm = 0.0;
+        const imgWidth = tiledImage.source.width;
+        const imgHeight = tiledImage.source.height;
+        
+        const re = centerRe - (complexWidth / 2) + (imagePoint.x / imgWidth) * complexWidth;
+        const im = centerIm + (complexHeight / 2) - (imagePoint.y / imgHeight) * complexHeight;
+
+        coordinateDisplay.textContent = `Re: ${re.toFixed(8)}, Im: ${im.toFixed(8)}`;
       });
     };
   </script>
