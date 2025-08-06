@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Mandelbrot Gigapixel Viewer</title>
   <style>
     html, body {
@@ -10,20 +10,20 @@
       background: black;
       height: 100%;
       width: 100%;
+      overflow: hidden;
     }
     #viewer {
       width: 100vw;
       height: 100vh;
     }
   </style>
-  <!-- Load OpenSeadragon script in the <head> with 'defer' to ensure it's available when DOM is ready -->
+  <!-- Load OpenSeadragon with defer to ensure it's ready before running -->
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.0/openseadragon.min.js"></script>
 </head>
 <body>
   <div id="viewer"></div>
 
   <script>
-    // Wait until the window is fully loaded before calling OpenSeadragon
     window.onload = function () {
       OpenSeadragon({
         id: "viewer",
@@ -38,4 +38,15 @@
           getTileUrl: function (level, x, y) {
             return `tiles/z${level}/${x}_${y}.jpg`;
           }
+        },
+        minZoomLevel: 0,
+        defaultZoomLevel: 1,
+        maxZoomPixelRatio: 4,      // zoom up to 4× beyond native
+        visibilityRatio: 1,
+        constrainDuringPan: true
+      });
+    };
+  </script>
+</body>
+</html>
 
