@@ -8,7 +8,7 @@ from tqdm import tqdm
 width, height = 8192, 8192
 center_x, center_y = -.5, -.75 # re, im
 scale = 3.5  # Reduced scale to zoom in and capture more detail
-max_iter = 64
+max_iter = 100
 samples_per_radius = 10
 radii = [1e-4, 1e-5, 1e-6]
 
@@ -196,7 +196,7 @@ if __name__ == "__main__":
     # Apply the new dynamic range boosting function
     boosted_image = boost_dynamic_range(image, alpha=0.2, beta=0.01)
 
-    plt.imsave("fractal_render.png", boosted_image)
-    plt.imshow(boosted_image)
-    plt.axis('off')
-    plt.show()
+    plt.imsave("burning_ship_variance_wall_art.png", boosted_image)
+    #plt.imshow(boosted_image)
+    #plt.axis('off')
+    #plt.show()
