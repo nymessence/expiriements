@@ -196,7 +196,8 @@ if __name__ == "__main__":
     # Apply the new dynamic range boosting function
     boosted_image = boost_dynamic_range(image, alpha=0.2, beta=0.01)
 
-    plt.imsave("burning_ship_variance_wall_art.png", boosted_image)
+    plt.imsave("burning_ship_variance_wall_art.jpg", boosted_image) # png gave too large a file for github
+
     #plt.imshow(boosted_image)
     #plt.axis('off')
     #plt.show()
